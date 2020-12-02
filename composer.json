@@ -1,0 +1,12 @@
+{
+    "name": "root/html",
+    "require": {
+      "ext-json": "*"
+    },
+    "autoload" : {
+	    "psr-4" : {
+		    "Core\\" : "Core/",
+		    "Controllers\\" : "Controllers/"
+	    }
+    }
+}
