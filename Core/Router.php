@@ -2,6 +2,8 @@
 
 namespace Core;
 
+use Exception;
+
 class Router
 {
     protected static function getHttpMethod()
@@ -11,7 +13,7 @@ class Router
 
     protected static function getHttpPath()
     {
-        return '/hello';
+        return '/hello/123/house/321';
     }
 
     private static function preparePattern(string $pattern) : string
@@ -21,6 +23,7 @@ class Router
 
     private static function runController($controller, array $params) : void
     {
+        array_shift($params);
         if (is_callable($controller)) {
             call_user_func_array($controller, $params);
         } else if (is_string($controller)) {
