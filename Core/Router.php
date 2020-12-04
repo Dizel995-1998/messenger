@@ -25,13 +25,13 @@ class Router
     {
         array_shift($params);
         if (is_callable($controller)) {
-            call_user_func_array($controller, $params);
+            echo call_user_func_array($controller, $params);
         } else if (is_string($controller)) {
             $arController = explode('@', $controller);
             $controllerClass = "\Controllers\\" . $arController[0];
             $controllerAction = $arController[1];
             $controllerObject = new $controllerClass();
-            call_user_func_array(array($controllerObject, $controllerAction), $params);
+            echo call_user_func_array(array($controllerObject, $controllerAction), $params);
         } else {
             throw new Exception('Controller must be string or callable function');
         }

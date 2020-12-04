@@ -4,11 +4,12 @@ namespace Core;
 
 class FileManager
 {
-    protected array $allowFileType = ['jpg', 'png'];
+    protected array $allowFileType;
     protected string $userFile;
 
-    public function __construct(string $userFile)
+    public function __construct(string $userFile, array $allowFileType)
     {
+        $this->allowFileType = $allowFileType;
         $this->userFile = $userFile;
     }
 

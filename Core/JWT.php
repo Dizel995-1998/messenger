@@ -19,15 +19,23 @@ class JWT
         return $headerEncode . '.' . $payloadEncode . '.' . $signature;
     }
 
-    public static function verificationToken(string $JwtToken) : bool
+
+    public static function stripToken(string $JwtToken) : ?array
     {
+        $arResult = [];
         $arToken = explode('.', $JwtToken);
         if (count($arToken) != 3) {
             throw new Exception('Token must consist of 3 parts');
         }
-        $header = $arToken[0];
-        $payload = $arToken[1];
-        $signature = $arToken[2];
+        $arResult['header'] = $arToken[0];
+        $arResult['payload'] = $arToken[1];
+        $arResult['signature'] = $arToken[2];
+        return self::verificationToken($arResult['header'], $arResult['payload'], $arResult['signature']) ?
+            $arResult : null;
+    }
+
+    protected static function verificationToken(string $header, string $payload, string $signature) : bool
+    {
         return ($signature == self::generateSignature($header, $payload)) ? true : false;
     }
 }
