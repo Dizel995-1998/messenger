@@ -2,7 +2,7 @@
 
 namespace Core;
 
-class AbstractController
+class BaseController
 {
     protected $httpService;
 
