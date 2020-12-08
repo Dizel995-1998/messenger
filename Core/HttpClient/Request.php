@@ -4,7 +4,7 @@
 namespace Core\HttpClient;
 
 
-class HttpRequest
+class Request
 {
 
 }

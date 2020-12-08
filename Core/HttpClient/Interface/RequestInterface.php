@@ -2,7 +2,7 @@
 
 namespace Core\HttpClient;
 
-interface HttpRequestInterface
+interface RequestInterface
 {
     public function setCookie(array $cookies) : void;
     public function setVersion(string $version) : void;

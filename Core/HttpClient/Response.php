@@ -2,7 +2,7 @@
 
 namespace Core\HttpClient;
 
-class HttpResponse
+class Response
 {
 
 }
