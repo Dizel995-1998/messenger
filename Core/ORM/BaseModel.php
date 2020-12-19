@@ -29,17 +29,11 @@ abstract class BaseModel extends QueryBuilder
 
     public function save() : bool
     {
-        if ($this->id) {
-            if (!self::update(static::class, $this->id, ['name' => 'test'])) {
-                return false;
-            }
-        } else {
-            if (self::insert(static::class, ['name' => 'dizel'], $id)) {
-                $this->id = $id;
-            } else {
-                return false;
-            }
-        }
-        return true;
+        $result = false;
+        $result = $this->id ?
+            self::update(static::class, ['name' => 'testName'], $this->id) :
+            self::insert(static::class, ['name' => 'newName'], $this->id);
+
+        return $result;
     }
 }
