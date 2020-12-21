@@ -20,36 +20,37 @@ class Router
         return '~^' . preg_replace('~({[a-zA-Z]+})~', '(\d+)', $pattern) . '~';
     }
 
-    private function runController($controller, array $params) : void
+    private function runController($controller, array $params) : string
     {
         array_shift($params);
         if (is_callable($controller)) {
-            echo call_user_func_array($controller, $params);
+            return call_user_func_array($controller, $params);
         } else if (is_string($controller)) {
             $arController = explode('@', $controller);
             $controllerClass = "\Controllers\\" . $arController[0];
             $controllerAction = $arController[1];
             $controllerObject = new $controllerClass();
-            echo call_user_func_array(array($controllerObject, $controllerAction), $params);
+            return call_user_func_array(array($controllerObject, $controllerAction), $params);
         } else {
             throw new Exception('Controller must be string or callable function');
         }
     }
 
-    protected function request(string $method, string $pathPattern, $controller)
+    protected function request(string $method, string $pathPattern, $controller) : ?string
     {
-        if (
-            $this->method == $method &&
-            preg_match($this->preparePattern($pathPattern), $this->path, $matches))
-        {
-            $this->runController($controller, $matches);
-        }
+        return $this->method == $method &&
+        preg_match($this->preparePattern($pathPattern), $this->path, $matches) ?
+                $this->runController($controller, $matches) : null;
     }
 
     public function __call($method, $arguments)
     {
         if (!in_array($method, $this->allowMethods)) {
             throw new Exception('Dont support this method ' . $method);
+        }
+
+        if (count($arguments) != 1) {
+            throw new Exception('Not right args count');
         }
 
         $this->request($method, $arguments[0], $arguments[1]);
