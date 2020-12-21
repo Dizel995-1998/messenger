@@ -6,22 +6,21 @@ use Exception;
 
 class Router
 {
-    protected static function getHttpMethod()
+    private array $allowMethods = ['get', 'post', 'put', 'delete'];
+    private string $method;
+    private string $path;
+
+    public function __construct() //HttpRequest $httpRequest)
     {
-        return 'GET';
+
     }
 
-    protected static function getHttpPath()
-    {
-        return '/hello/123/house/321';
-    }
-
-    private static function preparePattern(string $pattern) : string
+    private function preparePattern(string $pattern) : string
     {
         return '~^' . preg_replace('~({[a-zA-Z]+})~', '(\d+)', $pattern) . '~';
     }
 
-    private static function runController($controller, array $params) : void
+    private function runController($controller, array $params) : void
     {
         array_shift($params);
         if (is_callable($controller)) {
@@ -37,33 +36,22 @@ class Router
         }
     }
 
-    protected static function request(string $method, string $pathPattern, $controller)
+    protected function request(string $method, string $pathPattern, $controller)
     {
         if (
-            self::getHttpMethod() == $method &&
-            preg_match(self::preparePattern($pathPattern), self::getHttpPath(), $matches))
+            $this->method == $method &&
+            preg_match($this->preparePattern($pathPattern), $this->path, $matches))
         {
-            self::runController($controller, $matches);
+            $this->runController($controller, $matches);
         }
     }
 
-    public static function get(string $pathPattern, $controller)
+    public function __call($method, $arguments)
     {
-        self::request('GET', $pathPattern, $controller);
-    }
+        if (!in_array($method, $this->allowMethods)) {
+            throw new Exception('Dont support this method ' . $method);
+        }
 
-    public static function post(string $pathPattern, $controller)
-    {
-        self::request('POST', $pathPattern, $controller);
-    }
-
-    public static function delete(string $pathPattern, $controller)
-    {
-        self::request('DELETE', $pathPattern, $controller);
-    }
-
-    public static function put(string $pathPattern, $controller)
-    {
-        self::request('PUT', $pathPattern, $controller);
+        $this->request($method, $arguments[0], $arguments[1]);
     }
 }
