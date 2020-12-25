@@ -4,6 +4,20 @@ namespace Core;
 
 use Exception;
 
+/**
+ * Methods
+ * ->get( pathPattern, controller )
+ * ->post( pathPattern, controller )
+ * ->put( pathPattern, controller )
+ * ->delete( pathPattern, controller )
+ *
+ * pathPattern type string, example /user/{id}
+ * controller enum type - string, callable
+ *
+ * Class Router
+ * @package Core
+ */
+
 class Router
 {
     private array $allowMethods = ['get', 'post', 'put', 'delete'];
@@ -15,6 +29,12 @@ class Router
 
     }
 
+    /**
+     * Конвертирует паттерн из роута в регулярное выражение
+     * example: /user/{id} -> /user/(\d+)
+     * @param string $pattern
+     * @return string
+     */
     private function preparePattern(string $pattern) : string
     {
         return '~^' . preg_replace('~({[a-zA-Z]+})~', '(\d+)', $pattern) . '~';
@@ -30,7 +50,6 @@ class Router
     private function runController($controller, array $params) : string
     {
         array_shift($params);
-
         if (is_callable($controller)) {
             return call_user_func_array($controller, $params);
         }
@@ -49,10 +68,19 @@ class Router
         throw new Exception('Controller must be string or callable type');
     }
 
+    /**
+     * Обрабатывает входной запрос и перенаправляет его на соответсвующий контроллер
+     * @param string $method - HTTP methods, support - GET, POST, PUT, DELETE
+     * @param string $pathPattern - example /test/path/{id}
+     * @param $controller - enum type can be callable or string type
+     * @return string|null
+     * @throws Exception
+     */
     protected function request(string $method, string $pathPattern, $controller) : ?string
     {
-        return $this->method == $method &&
-        preg_match($this->preparePattern($pathPattern), $this->path, $matches) ?
+        return
+            $this->method == $method &&
+            preg_match($this->preparePattern($pathPattern), $this->path, $matches) ?
                 $this->runController($controller, $matches) : null;
     }
 
@@ -63,7 +91,7 @@ class Router
         }
 
         if (count($arguments) != 1) {
-            throw new Exception('Not right args count');
+            throw new Exception('Incorrect count of args');
         }
 
         $this->request($method, $arguments[0], $arguments[1]);
