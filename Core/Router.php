@@ -20,20 +20,33 @@ class Router
         return '~^' . preg_replace('~({[a-zA-Z]+})~', '(\d+)', $pattern) . '~';
     }
 
+    /**
+     * Запускает контроллер
+     * @param $controller - enum type - callable, string
+     * @param array $params
+     * @return string
+     * @throws Exception
+     */
     private function runController($controller, array $params) : string
     {
         array_shift($params);
+
         if (is_callable($controller)) {
             return call_user_func_array($controller, $params);
-        } else if (is_string($controller)) {
+        }
+
+        if (is_string($controller)) {
+            if (strpos($controller, '@') === false) {
+                throw new Exception('Controller type string must consist @ symbol delimiter');
+            }
+
             $arController = explode('@', $controller);
             $controllerClass = "\Controllers\\" . $arController[0];
             $controllerAction = $arController[1];
             $controllerObject = new $controllerClass();
             return call_user_func_array(array($controllerObject, $controllerAction), $params);
-        } else {
-            throw new Exception('Controller must be string or callable function');
         }
+        throw new Exception('Controller must be string or callable type');
     }
 
     protected function request(string $method, string $pathPattern, $controller) : ?string
